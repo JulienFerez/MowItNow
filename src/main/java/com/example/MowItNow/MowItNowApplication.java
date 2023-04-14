@@ -7,7 +7,7 @@ import java.io.IOException;
 
 @SpringBootApplication
 
-public class MowItNowApplication extends Tondeuse {
+public class MowItNowApplication extends Mower {
 
     public static void main(String[] args) {
         try {

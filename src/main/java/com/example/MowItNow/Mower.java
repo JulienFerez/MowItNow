@@ -3,7 +3,7 @@ package com.example.MowItNow;
 import lombok.Getter;
 
 @Getter
-public class Tondeuse {
+public class Mower {
 
 
 
