@@ -3,6 +3,9 @@ package com.example.MowItNow;
 import lombok.Getter;
 
 @Getter
+// TODO Ce n'est pas programmé selon la Programmation Orientée Objet
+// TODO Une Tondeuse devrait être un objet qui possède des attributs membres et des méthodes de classes (pas statiques)
+// TODO A revoir en mode POO
 public class Mower {
 
 
