@@ -1,23 +1,25 @@
 package com.example.MowItNow;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-// TODO Pas besoin de SpringBoot pour cet exercice
-@SpringBootApplication
-
-// TODO Mauvaise utilisation de l'héritage, à changer.
-public class MowItNowApplication extends Mower {
+public class MowItNowApplication {
 
     public static void main(String[] args) {
-        try {
-            // TODO Il faudrait passer le nom du fichier en paramètre du programme pour qu'il ne soit pas en dur ici
-            BufferedReader reader = new BufferedReader(new FileReader("inputFile.txt"));
 
-            // TODO Il faut séparer en deux le parsing du fichier ET le traitement des instructions
-            // Lire les dimensions de la pelouse
+        if (args.length < 1) {
+            System.out.println("Veuillez passer le nom du fichier en paramètre");
+            return;
+        }
+
+        String fileName = args[0];
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+
+            // Parsing du fichier pour obtenir les dimensions de la pelouse
             String[] dimensions = reader.readLine().split(" ");
             int maxX = Integer.parseInt(dimensions[0]);
             int maxY = Integer.parseInt(dimensions[1]);
@@ -25,45 +27,65 @@ public class MowItNowApplication extends Mower {
 
             String line;
             while ((line = reader.readLine()) != null) {
+                // Parsing du fichier pour obtenir la position de départ, l'orientation et les instructions
                 String[] tokens = line.split(" ");
                 int startX = Integer.parseInt(tokens[0]);
                 int startY = Integer.parseInt(tokens[1]);
-
-                // Utiliser un enum pour les orientations au lieu d'un char
-                char orientation = tokens[2].charAt(0);
+                Orientation orientation = Orientation.valueOf(tokens[2]);
                 String instructions = reader.readLine();
+                if (instructions == null) {
+                    throw new IOException("Instructions manquantes pour la tondeuse");
+                }
                 System.out.println("Position de départ : (" + startX + ", " + startY + ") Orientation : " + orientation + " Instructions : " + instructions);
 
-                for (int i = 0; i < instructions.length(); i++) {
-                    // TODO Utiliser un enum pour les instructions au lieu d'un char
-                    char instruction = instructions.charAt(i);
-                    // TODO Utiliser la syntaxe switch plus évoluée, celle avec la flêche ->
-                    switch (instruction) {
-                        case 'D':
-                            orientation = pivoterDroite(orientation);
-                            break;
-                        case 'G':
-                            orientation = pivoterGauche(orientation);
-                            break;
-                        case 'A':
-                            int[] newPosition = avancer(startX, startY, orientation);
-                            startX = newPosition[0];
-                            startY = newPosition[1];
-                            break;
-                        default:
-                            System.out.println("Instruction inconnue : " + instruction);
-                            break;
-                    }
-                }
+                // Traitement des instructions pour déplacer la tondeuse
+                Mower mower = new Mower();
+                int[] finalPosition = executeInstructions(startX, startY, orientation, instructions, maxX, maxY, mower);
+                System.out.println("Position finale : (" + finalPosition[0] + ", " + finalPosition[1] + ") Orientation : " + orientation);
 
-                System.out.println("Position finale : (" + startX + ", " + startY + ") Orientation : " + orientation);
             }
 
-            // TODO que se passe-t-il si il y a une exception et que cette instruction n'est pas executée ? Peut-on mieux gérer ça ?
             reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.err.println("Le fichier " + fileName + " n'a pas été trouvé !");
+        } catch (IOException | IllegalArgumentException e) {
+            System.err.println("Une erreur s'est produite lors de la lecture du fichier " + fileName + " : " + e.getMessage());
         }
     }
 
+    static int[] executeInstructions(int startX, int startY, Orientation startOrientation, String instructions, int maxX, int maxY, Mower mower) {
+        int[] currentPosition = new int[]{startX, startY};
+        Orientation currentOrientation = startOrientation;
+
+        for (int i = 0; i < instructions.length(); i++) {
+            Instruction instruction;
+            try {
+                instruction = Instruction.valueOf(String.valueOf(instructions.charAt(i)));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Instruction inconnue : " + instructions.charAt(i));
+                continue;
+            }
+            switch (instruction) {
+                case D:
+                    currentOrientation = mower.rotateRight(currentOrientation);
+                    break;
+                case G:
+                    currentOrientation = mower.rotateLeft(currentOrientation);
+                    break;
+                case A:
+                    int[] newPosition = mower.advance(currentPosition[0], currentPosition[1], currentOrientation);
+                    if (newPosition[0] >= 0 && newPosition[0] <= maxX && newPosition[1] >= 0 && newPosition[1] <= maxY) {
+                        currentPosition = newPosition;
+                    } else {
+                        System.out.println("La tondeuse a rencontré une limite de la pelouse, elle ne bougera pas.");
+                    }
+                    break;
+                default:
+                    System.out.println("Instruction inconnue : " + instruction);
+                    break;
+            }
+        }
+
+        return currentPosition;
+    }
 }
