@@ -15,7 +15,6 @@ public class Mower {
     private Orientation orientation;
 
 
-
     public Orientation getOrientation() {
         return orientation;
     }
@@ -26,7 +25,6 @@ public class Mower {
             case E -> S;
             case S -> W;
             case W -> N;
-            default -> orientation;
         };
     }
 
@@ -36,7 +34,6 @@ public class Mower {
             case E -> N;
             case S -> E;
             case W -> S;
-            default -> orientation;
         };
     }
 
@@ -65,6 +62,42 @@ public class Mower {
             }
         }
         return newPosition;
+    }
+
+    public int[] executeInstructions(int startX, int startY, Orientation startOrientation, String instructions, int maxX, int maxY, Mower mower) {
+        int[] currentPosition = new int[]{startX, startY};
+        Orientation currentOrientation = startOrientation;
+
+        for (int i = 0; i < instructions.length(); i++) {
+            Instruction instruction;
+            try {
+                instruction = Instruction.valueOf(String.valueOf(instructions.charAt(i)));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Instruction inconnue : " + instructions.charAt(i));
+                continue;
+            }
+            switch (instruction) {
+                case D:
+                    currentOrientation = mower.rotateRight(currentOrientation);
+                    break;
+                case G:
+                    currentOrientation = mower.rotateLeft(currentOrientation);
+                    break;
+                case A:
+                    int[] newPosition = mower.advance(currentPosition[0], currentPosition[1], currentOrientation);
+                    if (newPosition[0] >= 0 && newPosition[0] <= maxX && newPosition[1] >= 0 && newPosition[1] <= maxY) {
+                        currentPosition = newPosition;
+                    } else {
+                        System.out.println("La tondeuse a rencontré une limite de la pelouse, elle ne bougera pas.");
+                    }
+                    break;
+                default:
+                    System.out.println("Instruction inconnue : " + instruction);
+                    break;
+            }
+        }
+
+        return currentPosition;
     }
 
 }

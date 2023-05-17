@@ -41,15 +41,15 @@ class MowItNowApplicationTests {
     @Test
     public void testFinalPositionOfTheMowers() {
 
-        Mower tondeuse = new Mower(1, 2, Orientation.N);
+        Mower mower = new Mower(1, 2, Orientation.N);
         Mower secondMower = new Mower(1, 2, Orientation.E);
 
-        int[] finalPosition1 = MowItNowApplication.executeInstructions(1, 2, Orientation.N, "GAGAGAGAA", 5, 5, tondeuse);
+        int[] finalPosition1 = mower.executeInstructions(1, 2, Orientation.N, "GAGAGAGAA", 5, 5, mower);
         assertEquals(1, finalPosition1[0]);
         assertEquals(3, finalPosition1[1]);
-        assertEquals(Orientation.N, tondeuse.getOrientation());
+        assertEquals(Orientation.N, mower.getOrientation());
 
-        int[] finalPosition2 = MowItNowApplication.executeInstructions(3, 3, Orientation.E, "AADAADADDA", 5, 5, tondeuse);
+        int[] finalPosition2 = secondMower.executeInstructions(3, 3, Orientation.E, "AADAADADDA", 5, 5, secondMower);
         assertEquals(5, finalPosition2[0]);
         assertEquals(1, finalPosition2[1]);
         assertEquals(Orientation.E, secondMower.getOrientation());
@@ -79,8 +79,8 @@ class MowItNowApplicationTests {
     public void testExecuteInstructionsMissingInstructions() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        Mower tondeuse = new Mower();
-        MowItNowApplication.executeInstructions(0, 0, Orientation.N, "", 5, 5, tondeuse);
+        Mower mower = new Mower();
+        mower.executeInstructions(0, 0, Orientation.N, "", 5, 5, mower);
         assertEquals("", outContent.toString());
     }
 
@@ -88,9 +88,9 @@ class MowItNowApplicationTests {
     public void testExecuteInstructionsUnknownInstruction() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        Mower tondeuse = new Mower();
+        Mower mower = new Mower();
         String expected = "Instruction inconnue : X";
-        MowItNowApplication.executeInstructions(0, 0, Orientation.N, "DGAX", 5, 5, tondeuse);
+        mower.executeInstructions(0, 0, Orientation.N, "DGAX", 5, 5, mower);
         assertEquals(expected + System.lineSeparator(), outContent.toString());
     }
 
