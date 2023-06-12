@@ -8,6 +8,6 @@ public class MooveService {
 
     public static void executeInstructions(Lawn lawn, Mower mower) {
         mower.executeInstructions(lawn, mower);
-        DisplayServiceImpl.displayPositionMower(mower);
+        DisplayService.displayPositionMower(mower);
     }
 }

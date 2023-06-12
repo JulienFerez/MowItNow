@@ -27,7 +27,7 @@ public class ReaderService {
             lawn.setMaxX(Integer.parseInt(dimensions[0]));
             lawn.setMaxY(Integer.parseInt(dimensions[1]));
             String line;
-            DisplayServiceImpl.displayDimensionsLawn(lawn);
+            DisplayService.displayDimensionsLawn(lawn);
             while ((line = reader.readLine()) != null) {
                 String[] tokens = line.split(" ");
                 Mower mower = new Mower();

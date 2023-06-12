@@ -3,7 +3,7 @@ package com.example.MowItNow.service;
 import com.example.MowItNow.model.Lawn;
 import com.example.MowItNow.model.Mower;
 
-public class DisplayServiceImpl {
+public class DisplayService {
 
    static public void displayDimensionsLawn(Lawn lawn){
         System.out.println("Dimensions de la pelouse : " + lawn.maxX + " x " + lawn.maxY);
