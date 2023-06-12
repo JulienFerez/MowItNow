@@ -1,5 +1,8 @@
 package com.example.MowItNow;
 
+import com.example.MowItNow.model.Lawn;
+import com.example.MowItNow.model.Mower;
+import com.example.MowItNow.model.Orientation;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -54,25 +57,58 @@ public class MowerTest {
     @Test
     public void testExecuteInstructions() {
         Mower mower = new Mower();
+        mower.setStartX(1);
+        mower.setStartY(2);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("GAGAGAGAA");
+        Lawn lawn = new Lawn(5,5);
         // Test avec des instructions valides
-        int[] currentPosition = mower.executeInstructions(1, 2, Orientation.N, "GAGAGAGAA", 5, 5, new Mower());
+        int[] currentPosition = mower.executeInstructions(lawn, mower);
         assertArrayEquals(new int[]{1, 3}, currentPosition);
 
-        // Test avec une instruction inconnue
-        currentPosition = mower.executeInstructions(3, 3, Orientation.E, "ADGZ", 5, 5, new Mower());
+    }
+
+    @Test
+    public void testExecuteUnknownInstructions() {
+        Mower mower = new Mower();
+        mower.setStartX(3);
+        mower.setStartY(3);
+        mower.setOrientation(Orientation.E);
+        mower.setInstructions("ADGZ");
+        Lawn lawn = new Lawn(5,5);
+        // Test avec des instructions valides
+        int[] currentPosition = mower.executeInstructions(lawn, mower);
         assertArrayEquals(new int[]{4, 3}, currentPosition);
-
-        // Test avec une position de départ en dehors de la pelouse
-        currentPosition = mower.executeInstructions(6, 6, Orientation.N, "GAGAGAGAA", 5, 5, new Mower());
-        assertArrayEquals(new int[]{6, 6}, currentPosition);
-
-        // Test avec une position finale en dehors de la pelouse
-        currentPosition = mower.executeInstructions(1, 2, Orientation.N, "AAAAAAAAAAA", 1, 1, new Mower());
-        assertArrayEquals(new int[]{1, 2}, currentPosition);
-
 
     }
 
 
+    @Test
+    public void testExecuteStartingPositionOffTheLawn() {
+        Mower mower = new Mower();
+        mower.setStartX(6);
+        mower.setStartY(6);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("GAGAGAGAA");
+        Lawn lawn = new Lawn(5,5);
+        // Test avec des instructions valides
+        int[] currentPosition = mower.executeInstructions(lawn, mower);
+        assertArrayEquals(new int[]{6, 6}, currentPosition);
+
+    }
+
+    @Test
+    public void testExecuteFinalPositionOffTheLawn() {
+        Mower mower = new Mower();
+        mower.setStartX(1);
+        mower.setStartY(2);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("AAAAAAAAAAA");
+        Lawn lawn = new Lawn(1,1);
+        // Test avec des instructions valides
+        int[] currentPosition = mower.executeInstructions(lawn, mower);
+        assertArrayEquals(new int[]{1, 2}, currentPosition);
+
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.example.MowItNow;
+package com.example.MowItNow.model;
 
 public enum Instruction {
     A, G, D

@@ -1,5 +1,9 @@
 package com.example.MowItNow;
 
+import com.example.MowItNow.model.Lawn;
+import com.example.MowItNow.model.Mower;
+import com.example.MowItNow.model.Orientation;
+import com.example.MowItNow.service.ReaderService;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -7,11 +11,15 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 
 
 class MowItNowApplicationTests {
+
+  Lawn lawn = new Lawn(5, 5);
+
 
     @Test
     public void testDisplayOfResults() {
@@ -41,15 +49,23 @@ class MowItNowApplicationTests {
     @Test
     public void testFinalPositionOfTheMowers() {
 
-        Mower mower = new Mower(1, 2, Orientation.N);
-        Mower secondMower = new Mower(1, 2, Orientation.E);
+        Mower mower = new Mower();
+        mower.setStartX(1);
+        mower.setStartY(2);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("GAGAGAGAA");
+        Mower secondMower = new Mower();
+        secondMower.setStartX(3);
+        secondMower.setStartY(3);
+        secondMower.setOrientation(Orientation.E);
+        secondMower.setInstructions("AADAADADDA");
 
-        int[] finalPosition1 = mower.executeInstructions(1, 2, Orientation.N, "GAGAGAGAA", 5, 5, mower);
+        int[] finalPosition1 = mower.executeInstructions(lawn, mower);
         assertEquals(1, finalPosition1[0]);
         assertEquals(3, finalPosition1[1]);
         assertEquals(Orientation.N, mower.getOrientation());
 
-        int[] finalPosition2 = secondMower.executeInstructions(3, 3, Orientation.E, "AADAADADDA", 5, 5, secondMower);
+        int[] finalPosition2 = secondMower.executeInstructions(lawn, secondMower);
         assertEquals(5, finalPosition2[0]);
         assertEquals(1, finalPosition2[1]);
         assertEquals(Orientation.E, secondMower.getOrientation());
@@ -71,8 +87,9 @@ class MowItNowApplicationTests {
         System.setErr(new PrintStream(errContent));
         String expected = "Le fichier file-does-not-exist.txt n'a pas été trouvé !";
         String[] args = {"file-does-not-exist.txt"};
-        MowItNowApplication.main(args);
-        assertEquals(expected + System.lineSeparator(), errContent.toString());
+        assertThrows(RuntimeException.class, () -> {
+            ReaderService.readFile(args);
+        });
     }
 
     @Test
@@ -80,7 +97,11 @@ class MowItNowApplicationTests {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         Mower mower = new Mower();
-        mower.executeInstructions(0, 0, Orientation.N, "", 5, 5, mower);
+        mower.setStartX(0);
+        mower.setStartY(0);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("");
+        mower.executeInstructions(lawn, mower);
         assertEquals("", outContent.toString());
     }
 
@@ -89,8 +110,12 @@ class MowItNowApplicationTests {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         Mower mower = new Mower();
+        mower.setStartX(0);
+        mower.setStartY(0);
+        mower.setOrientation(Orientation.N);
+        mower.setInstructions("DGAX");
         String expected = "Instruction inconnue : X";
-        mower.executeInstructions(0, 0, Orientation.N, "DGAX", 5, 5, mower);
+        mower.executeInstructions(lawn, mower);
         assertEquals(expected + System.lineSeparator(), outContent.toString());
     }
 
